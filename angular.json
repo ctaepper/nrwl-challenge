@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "projects": {
+    "tickets": {
+      "projectType": "application",
+      "root": "apps/tickets",
+      "sourceRoot": "apps/tickets/src",
+      "prefix": "nrwl-challenge",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/tickets",
+            "index": "apps/tickets/src/index.html",
+            "main": "apps/tickets/src/main.ts",
+            "polyfills": "apps/tickets/src/polyfills.ts",
+            "tsConfig": "apps/tickets/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/tickets/src/favicon.ico",
+              "apps/tickets/src/assets"
+            ],
+            "styles": ["apps/tickets/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/tickets/src/environments/environment.ts",
+                  "with": "apps/tickets/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "tickets:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "tickets:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "tickets:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/tickets/src/**/*.ts",
+              "apps/tickets/src/**/*.html"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/tickets"],
+          "options": {
+            "jestConfig": "apps/tickets/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "tickets-e2e": {
+      "root": "apps/tickets-e2e",
+      "sourceRoot": "apps/tickets-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/tickets-e2e/cypress.json",
+            "tsConfig": "apps/tickets-e2e/tsconfig.e2e.json",
+            "devServerTarget": "tickets:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "tickets:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/tickets-e2e/**/*.{js,ts}"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "schematics": {
+    "@nrwl/angular": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      },
+      "storybook-configuration": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/angular:application": {
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
+    }
+  },
+  "defaultProject": "tickets"
+}
