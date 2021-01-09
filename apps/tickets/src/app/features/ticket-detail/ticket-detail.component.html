@@ -1,0 +1,16 @@
+<a [routerLink]="['..']">all tickets</a>
+<ng-container *ngIf="ticket$ | async as ticket">
+
+  <pre>ID {{ticket.id}}</pre>
+  <p>
+    {{ticket.description}}
+  </p>
+
+  <button type='button' (click)='complete(ticket.id)' *ngIf='!ticket.completed'>complete</button>
+
+  <ng-container *ngIf='ticket.completed'>
+    <input type='checkbox' disabled checked> completed
+  </ng-container>
+
+
+</ng-container>

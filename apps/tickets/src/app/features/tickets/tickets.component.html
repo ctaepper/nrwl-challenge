@@ -1,0 +1,10 @@
+<input type="text" [formControl]="search" placeholder='search' />
+
+<ul>
+  <li *ngFor="let ticket of filteredTickets$ | async">
+    {{ticket.description}} <a [routerLink]='[ticket.id]'>detail</a>
+  </li>
+</ul>
+
+<input type="text" [formControl]="newTicket" placeholder='new ticket' />
+<button type='button' (click)='createTicket()'>add</button>

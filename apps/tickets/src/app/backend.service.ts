@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { delay, map, tap } from 'rxjs/operators';
 
 /**
  * This service acts as a mock back-end.
@@ -25,45 +25,48 @@ function randomDelay() {
 
 @Injectable()
 export class BackendService {
-  storedTickets: Ticket[] = [
+  private storedTickets: Ticket[] = [
     {
       id: 0,
       description: 'Install a monitor arm',
       assigneeId: 111,
-      completed: false
+      completed: false,
     },
     {
       id: 1,
       description: 'Move the desk to the new location',
-      assigneeId: 111,
-      completed: false
-    }
+      assigneeId: 112,
+      completed: false,
+    },
   ];
 
-  storedUsers: User[] = [{ id: 111, name: 'Victor' }];
+  storedUsers: User[] = [{ id: 111, name: 'Victor' }, { id: 112, name: 'Chris' }];
 
   lastId = 1;
 
-  constructor() { }
+  constructor() {}
 
-  private findTicketById = id =>
-    this.storedTickets.find(ticket => ticket.id === +id);
-  private findUserById = id => this.storedUsers.find(user => user.id === +id);
+  private findTicketById = (id) =>
+    this.storedTickets.find((ticket) => ticket.id === +id);
+  private findUserById = (id) =>
+    this.storedUsers.find((user) => user.id === +id);
+
+  private copy = (obj) => JSON.parse(JSON.stringify(obj));
 
   tickets() {
-    return of(this.storedTickets).pipe(delay(randomDelay()));
+    return of(this.storedTickets).pipe(map(this.copy), delay(randomDelay()));
   }
 
   ticket(id: number): Observable<Ticket> {
-    return of(this.findTicketById(id)).pipe(delay(randomDelay()));
+    return of(this.findTicketById(id)).pipe(map(this.copy), delay(randomDelay()));
   }
 
   users() {
-    return of(this.storedUsers).pipe(delay(randomDelay()));
+    return of(this.storedUsers).pipe(map(this.copy), delay(randomDelay()));
   }
 
   user(id: number) {
-    return of(this.findUserById(id)).pipe(delay(randomDelay()));
+    return of(this.findUserById(id)).pipe(map(this.copy), delay(randomDelay()));
   }
 
   newTicket(payload: { description: string }) {
@@ -71,12 +74,13 @@ export class BackendService {
       id: ++this.lastId,
       description: payload.description,
       assigneeId: null,
-      completed: false
+      completed: false,
     };
 
     return of(newTicket).pipe(
       delay(randomDelay()),
-      tap((ticket: Ticket) => this.storedTickets.push(ticket))
+      tap((ticket: Ticket) => this.storedTickets.push(ticket)),
+      map(this.copy)
     );
   }
 
@@ -89,7 +93,8 @@ export class BackendService {
         delay(randomDelay()),
         tap((ticket: Ticket) => {
           ticket.assigneeId = +userId;
-        })
+        }),
+        map(this.copy)
       );
     }
 
@@ -103,7 +108,8 @@ export class BackendService {
         delay(randomDelay()),
         tap((ticket: Ticket) => {
           ticket.completed = true;
-        })
+        }),
+        map(this.copy)
       );
     }
 
