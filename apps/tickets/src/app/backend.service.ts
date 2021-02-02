@@ -102,6 +102,7 @@ export class BackendService {
   }
 
   complete(ticketId: number, completed: boolean) {
+
     const foundTicket = this.findTicketById(+ticketId);
     if (foundTicket) {
       return of(foundTicket).pipe(

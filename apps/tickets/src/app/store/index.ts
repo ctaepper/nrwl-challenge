@@ -30,6 +30,11 @@ export const selectCurrentTicketId = createSelector(
   fromTickets.getCurrentId
 );
 
+export const selectAllUsers = createSelector(
+  selectTicketsFeature,
+  fromTickets.getUsers
+);
+
 export const selectLoading = createSelector(
   selectTicketsFeature, fromTickets.getLoading
 )

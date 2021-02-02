@@ -6,6 +6,7 @@ import { select, Store } from '@ngrx/store';
 @Injectable({ providedIn: 'root' })
 export class Facade {
   tickets$ = this.store.pipe(select(fromStore.selectAllTickets));
+  users$ = this.store.pipe(select(fromStore.selectAllUsers));
   currentTicket$ = this.store.pipe(select(fromStore.selectCurrentTicket));
   loading$ = this.store.pipe(select(fromStore.selectLoading));
 
@@ -13,6 +14,10 @@ export class Facade {
 
   loadTickets() {
     this.store.dispatch(ticketActions.loadTickets());
+  }
+
+  loadUsers() {
+    this.store.dispatch(ticketActions.loadUsers());
   }
 
   createTicket(description) {
@@ -25,5 +30,9 @@ export class Facade {
 
   completeTicket(ticketId) {
     this.store.dispatch(ticketActions.completeTicket({ ticketId }));
+  }
+
+  assignTo(assigneeId: number) {
+    this.store.dispatch(ticketActions.assignTicket({ assigneeId }));
   }
 }

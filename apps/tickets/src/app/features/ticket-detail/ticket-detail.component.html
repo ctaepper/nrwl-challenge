@@ -6,6 +6,11 @@
     {{ticket.description}}
   </p>
 
+  <select [formControl]='userForm'>
+    <option>- select user -</option>
+    <option *ngFor='let user of users$ | async' [value]='user.id'>{{user.name}}</option>
+  </select>
+
   <button type='button' (click)='complete(ticket.id)' *ngIf='!ticket.completed'>complete</button>
 
   <ng-container *ngIf='ticket.completed'>
@@ -14,3 +19,5 @@
 
 
 </ng-container>
+
+<pre>{{users$ | async | json}}</pre>

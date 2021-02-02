@@ -1,8 +1,11 @@
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { BackendService } from '../backend.service';
 import * as ticketActions from './ticket-entities.actions';
-import { map, mergeMap, pluck } from 'rxjs/operators';
+import { catchError, map, mergeMap, pluck, tap, withLatestFrom } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
+import * as fromStore from './index';
+import { select, Store } from '@ngrx/store';
+import { of } from 'rxjs';
 
 @Injectable()
 export class TicketEffects {
@@ -13,6 +16,17 @@ export class TicketEffects {
         this.backend
           .tickets()
           .pipe(map((tickets) => ticketActions.loadTicketsSuccess({ tickets })))
+      )
+    )
+  );
+
+  loadUsers$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ticketActions.loadUsers),
+      mergeMap(() =>
+        this.backend
+          .users()
+          .pipe(map((users) => ticketActions.loadUsersSuccess({ users })))
       )
     )
   );
@@ -33,15 +47,44 @@ export class TicketEffects {
     this.actions$.pipe(
       ofType(ticketActions.completeTicket),
       pluck('ticketId'),
-      mergeMap((id) =>
+      withLatestFrom(this.store.pipe(select(fromStore.selectCurrentTicket))),
+      tap(([_, ticket]) => {
+        this.store.dispatch(
+          ticketActions.completeTicketOptimistic({
+            ticket: {
+              ...ticket,
+              completed: true,
+            },
+          })
+        );
+      }),
+      mergeMap(([id, ticket]) =>
         this.backend
           .complete(id, true)
           .pipe(
-            map((ticket) => ticketActions.completeTicketSuccess({ ticket }))
+            map((ticket) => ticketActions.completeTicketSuccess({ ticket })),
+            catchError(error => of(ticketActions.revertCompleteTicketOptimistic({ticket: ticket})))
           )
       )
     )
   );
 
-  constructor(private actions$: Actions, private backend: BackendService) {}
+  assignTicket$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ticketActions.assignTicket),
+      pluck('assigneeId'),
+      withLatestFrom(this.store.pipe(select(fromStore.selectCurrentTicketId))),
+      mergeMap(([assigneeId, ticketId]) =>
+        this.backend
+          .assign(ticketId, assigneeId)
+          .pipe(map((ticket) => ticketActions.assignTicketSuccess({ ticket })))
+      )
+    )
+  );
+
+  constructor(
+    private actions$: Actions,
+    private backend: BackendService,
+    private store: Store<fromStore.State>
+  ) {}
 }

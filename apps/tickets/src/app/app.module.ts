@@ -20,7 +20,7 @@ const ROUTES: Route[] = [
   },
   {
     path: 'tickets/:id',
-    component: TicketDetailComponent,
+    component: TicketDetailComponent
   },
   { path: '**', redirectTo: '/tickets' },
 ];

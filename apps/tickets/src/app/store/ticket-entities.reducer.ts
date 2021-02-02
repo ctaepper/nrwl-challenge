@@ -31,6 +31,8 @@ const ticketReducer = createReducer(
   on(ticketActions.loadTicketsSuccess, (state, { tickets }) =>
     adapter.setAll(tickets, {...state, loading: false})
   ),
+  on(ticketActions.loadUsersSuccess, (state, { users }) => ({...state, users})
+  ),
   on(ticketActions.createTicketSuccess, (state, { ticket }) =>
     adapter.addOne(ticket, {...state, loading: false})
   ),
@@ -38,9 +40,9 @@ const ticketReducer = createReducer(
     ...state,
     currentId: ticketId,
   })),
-  on(ticketActions.completeTicketSuccess, (state, { ticket }) =>
+  on(ticketActions.completeTicketSuccess, ticketActions.assignTicketSuccess, ticketActions.revertCompleteTicketOptimistic, ticketActions.completeTicketOptimistic, (state, { ticket }) =>
     adapter.upsertOne(ticket, {...state, loading: false})
-  )
+  ),
 );
 
 export function reducer(state: TicketState | undefined, action: Action) {
